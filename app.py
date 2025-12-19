@@ -49,6 +49,14 @@ if uploaded_file:
         days = float(prediction[0][0])
         days = max(0, days)  # Prevent negative numbers
 
+        # --- 4. SAFETY CHECK SNIPPET ---
+        # If the photo is very bright (Yellow/White) but the AI guessed 'Poor'
+        if avg_brightness > 190 and days < 3:
+            days = 7.2  # Correcting the AI's mistake for fresh bananas
+        # If the photo is very dark (Rotten) but the AI guessed high
+        elif avg_brightness < 90 and days > 2:
+            days = 0.5  # Correcting the AI's mistake for rotten bananas
+
         st.divider()
 
         # Define Parameters
@@ -87,4 +95,5 @@ if uploaded_file:
         st.info(f"**Pro Tip:** {advice}")
 
         st.write("Freshness Meter:")
+
         st.progress(min(days / 10.0, 1.0))
